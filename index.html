@@ -3,208 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0c0a">
+    <meta name="theme-color" content="#050505">
     <link rel="manifest" href="manifest.json">
-    <title>Kashtan VFD Android</title>
+    <title>VU Meter Horizontal Bars</title>
     <style>
         body { 
-            background: #1a1c1a; 
-            color: #78a890; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            margin: 0;
-            padding: 10px;
-            overflow-x: hidden;
-            touch-action: none;
+            background: #000; color: white; font-family: sans-serif; 
+            display: flex; flex-direction: column; align-items: center; 
+            margin: 0; padding: 10px; overflow: hidden; touch-action: none; 
         }
-        
-        h2 { font-size: 1.2rem; letter-spacing: 3px; margin: 10px 0; }
-
-        .vfd-container {
-            background: #0a0c0a;
-            padding: 10px;
-            border-radius: 10px;
-            border: 3px solid #333;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            width: 95vw;
-            max-width: 600px;
-            box-sizing: border-box;
-        }
-
-        .odometer { 
-            display: flex; 
-            background: #050505; 
-            padding: 5px; 
-            border: 2px solid #222; 
-            margin-bottom: 15px;
-        }
-        .digit-container { position: relative; width: 18px; height: 28px; overflow: hidden; }
-        .digit-strip { display: flex; flex-direction: column; align-items: center; transition: transform 0.3s ease-in-out; }
-        .digit-strip span { height: 28px; line-height: 28px; font-size: 18px; color: #4ecdc4; font-family: 'Courier New', monospace; }
-
         canvas { 
-            background: #080a08;
-            width: 100%;
-            height: auto;
-            border-radius: 4px;
+            width: 95vw; height: auto; max-width: 800px; 
+            background: #050505; border: 1px solid #222; border-radius: 8px;
         }
-
         .controls { 
-            margin-top: 15px; 
-            background: #222; 
-            padding: 15px; 
-            border-radius: 10px; 
-            width: 90vw;
-            max-width: 400px;
-            box-sizing: border-box;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; 
+            width: 95%; max-width: 500px; margin-top: 15px; 
+            background: #111; padding: 15px; border-radius: 10px; 
         }
-        
-        #startBtn {
-            margin-top: 15px;
-            padding: 15px 0;
-            width: 90vw;
-            max-width: 400px;
-            background: #2d3e2d;
-            color: #78a890;
-            border: 2px solid #4a634a;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
+        .control-group { display: flex; flex-direction: column; align-items: center; }
+        label { font-size: 11px; color: #666; margin-bottom: 5px; font-weight: bold; }
+        input[type=range] { width: 100%; height: 25px; }
+        #startBtn { 
+            margin-top: 20px; padding: 15px; width: 90%; max-width: 400px;
+            background: #333; color: #fff; border: 1px solid #555; border-radius: 8px;
+            font-size: 16px; font-weight: bold;
         }
     </style>
 </head>
 <body>
-
-    <h2>VFD ANALYZER UNIT</h2>
-
-    <div class="odometer" id="odometer">
-        <div class="digit-container" id="d4"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d3"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d2"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d1"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-        <div class="digit-container" id="d0"><div class="digit-strip"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span></div></div>
-    </div>
-
-    <div class="vfd-container">
-        <canvas id="canvas" width="600" height="220"></canvas>
-    </div>
-
+    <canvas id="canvas" width="800" height="400"></canvas>
+    
     <div class="controls">
-        <label style="font-size: 11px; display: block; margin-bottom: 8px; color: #888;">INPUT GAIN</label>
-        <input type="range" id="masterGain" min="1" max="100" step="1" value="40" style="width:100%">
+        <div class="control-group"><label>SENSITIVITY</label><input type="range" id="gain" min="1" max="10" value="5"></div>
+        <div class="control-group"><label>FALL SPEED</label><input type="range" id="speed" min="1" max="10" value="5"></div>
+        <div class="control-group"><label>BAR WIDTH</label><input type="range" id="width" min="5" max="50" value="20"></div>
+        <div class="control-group"><label>COLOR SHIFT</label><input type="range" id="color" min="0" max="360" value="140"></div>
     </div>
 
-    <button id="startBtn">START SYSTEM</button>
+    <button id="startBtn">START BARS ANALYZER</button>
 
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const btn = document.getElementById('startBtn');
+        let barHeights = new Array(32).fill(0);
 
-        let startTime = null;
-        let peakL = 0, peakR = 0;
-        const gravity = 0.3; 
-        const ledCount = 18;
-
-        function updateOdometer() {
-            if (!startTime) return;
-            let seconds = Math.floor((Date.now() - startTime) / 1000);
-            let sStr = seconds.toString().padStart(5, '0');
-            for (let i = 0; i < 5; i++) {
-                const el = document.getElementById('d' + (4-i));
-                if(el) el.querySelector('.digit-strip').style.transform = `translateY(-${parseInt(sStr[i]) * 28}px)`;
-            }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
 
         btn.onclick = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 const audioCtx = new AudioContext();
                 
-                // Fix pentru deblocare audio pe Android (A52s/S24)
-                if (audioCtx.state === 'suspended') {
-                    await audioCtx.resume();
-                }
-
-                startTime = Date.now();
-                setInterval(updateOdometer, 1000);
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
 
                 const source = audioCtx.createMediaStreamSource(stream);
-                const analyserL = audioCtx.createAnalyser();
-                const analyserR = audioCtx.createAnalyser();
-                const splitter = audioCtx.createChannelSplitter(2);
+                const analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 128; // Mai puține benzi pentru bare mai groase
+                source.connect(analyser);
                 
-                source.connect(splitter);
-                splitter.connect(analyserL, 0);
-                splitter.connect(analyserR, 1);
-
-                const dataL = new Uint8Array(analyserL.frequencyBinCount);
-                const dataR = new Uint8Array(analyserR.frequencyBinCount);
-                
+                const data = new Uint8Array(analyser.frequencyBinCount);
                 btn.style.display = 'none';
 
                 function draw() {
                     requestAnimationFrame(draw);
-                    analyserL.getByteFrequencyData(dataL);
-                    analyserR.getByteFrequencyData(dataR);
+                    analyser.getByteFrequencyData(data);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
-                    let volL = dataL.reduce((a,b) => a+b) / dataL.length;
-                    let volR = dataR.reduce((a,b) => a+b) / dataR.length;
-                    
-                    let gain = document.getElementById('masterGain').value / 10;
-                    volL *= gain; volR *= gain;
+                    const g = document.getElementById('gain').value / 2;
+                    const s = document.getElementById('speed').value / 20;
+                    const bW = parseInt(document.getElementById('width').value);
+                    const hueBase = parseInt(document.getElementById('color').value);
 
-                    ctx.fillStyle = "#080a08";
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    const spacing = 5;
+                    const totalBars = Math.min(data.length, 30);
+                    const startX = (canvas.width - (totalBars * (bW + spacing))) / 2;
 
-                    // Grila VFD
-                    ctx.strokeStyle = "rgba(255,255,255,0.03)";
-                    ctx.lineWidth = 1;
-                    for(let i=0; i<canvas.height; i+=4) {
-                        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
-                    }
-
-                    ctx.font = "24px Arial Black";
-                    ctx.fillStyle = "rgba(150, 200, 180, 0.9)";
-                    ctx.shadowBlur = 10; ctx.shadowColor = "#78a890";
-                    ctx.fillText("LEFT", 60, 75);
-                    ctx.fillText("RIGHT", 60, 175);
-                    
-                    ctx.font = "18px monospace";
-                    ctx.shadowBlur = 5;
-                    ctx.fillText("dB - 20   12  10  6   0  + 3  5", 210, 125);
-
-                    [volL, volR].forEach((v, i) => {
-                        let activeLeds = (v / 40) * ledCount;
-                        let y = i === 0 ? 55 : 155;
+                    for (let i = 0; i < totalBars; i++) {
+                        let targetHeight = data[i] * g;
                         
-                        if (i === 0) peakL = activeLeds > peakL ? activeLeds : peakL - gravity;
-                        else peakR = activeLeds > peakR ? activeLeds : peakR - gravity;
-                        
-                        let currentVal = i === 0 ? peakL : peakR;
-
-                        for (let j = 0; j < ledCount; j++) {
-                            let x = 210 + (j * 20);
-                            let isOver = j > 13;
-                            
-                            if (j < currentVal) {
-                                ctx.fillStyle = isOver ? "rgba(255, 200, 50, 0.9)" : "rgba(180, 230, 210, 0.9)";
-                                ctx.shadowBlur = 15;
-                                ctx.shadowColor = isOver ? "#ffc832" : "#b4e6d2";
-                            } else {
-                                ctx.fillStyle = "rgba(255,255,255,0.03)";
-                                ctx.shadowBlur = 0;
-                            }
-                            ctx.fillRect(x, y, 12, 30);
+                        // Cădere lină
+                        if (targetHeight > barHeights[i]) {
+                            barHeights[i] = targetHeight;
+                        } else {
+                            barHeights[i] -= (barHeights[i] - targetHeight) * s;
                         }
-                    });
+
+                        // Gradient culoare bazat pe înălțime
+                        let hue = (hueBase + (i * 5)) % 360;
+                        ctx.fillStyle = `hsla(${hue}, 80%, 50%, 0.8)`;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = `hsla(${hue}, 80%, 50%, 0.5)`;
+
+                        // Desenare bară (de jos în sus)
+                        ctx.fillRect(
+                            startX + i * (bW + spacing), 
+                            canvas.height - barHeights[i], 
+                            bW, 
+                            barHeights[i]
+                        );
+
+                        // Vârfurile (Peak meters)
+                        ctx.fillStyle = "#fff";
+                        ctx.fillRect(startX + i * (bW + spacing), canvas.height - barHeights[i] - 2, bW, 2);
+                    }
                 }
                 draw();
-            } catch (err) { alert("Eroare hardware: " + err); }
+            } catch (err) {
+                alert("Eroare: " + err.message);
+            }
         };
     </script>
 </body>
